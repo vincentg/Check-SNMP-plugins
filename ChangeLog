@@ -1,0 +1,20 @@
+0.4 
+- Initial release
+0.5
+- Change output of check_snmp_disks for better parsing
+- No more space in disk_description : "C:\ Label: Serial:" become "C:\"
+- Some minor code improvement
+0.6
+- Bug Fixes : Compilation problem on Centos 4.1
+0.8
+- Adding performance data output by the option -d
+- Bug Fixes : Compilation problem on Red-Hat based systems 
+- The INSTALL file is now written
+- If no arguments provided, print the help and exit
+- check_snmp_disk: Alert if >= to the limit instead of strict >
+
+0.9
+- Bug Fix : add limits.h header in snmp-common.c (compilation issue)
+- Push the limit to 100 disks instead of 20
+- Author mailbox changed (vincent@xenbox.fr)
+

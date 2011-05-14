@@ -1,0 +1,67 @@
+SNMP Monitoring plugin pack written in C for efficiency and scalability
+
+All these plugins work immediatly with the standard SNMP implementations of LINUX and WINDOWS.
+
+This package includes:
+**check_snmp_disk** : Monitors disk / ram / virtual memory usage.
+**check_snmp_load** : Returns the load in % for Windows or the load averages for Linux.
+**check_snmp_process** : Returns the number of process, and the memory space by process. (can also checks multiples process)
+
+
+Prerequisites:
+
+You must have the snmp development library installed on your system
+(on linux debian: aptitude install libsnmp-dev)
+
+To compile:
+./configure   (--prefix=PATH)
+make
+
+if you have set a prefix:
+make install and binaries will be in PATH/bin
+if you experiment compilation problems, please refer to the INSTALL file
+
+
+3 binaries are now in ./src or PATH/bin (if you provided a --prefix to configure):
+
+check_snmp_disk
+check_snmp_process
+check_snmp_load
+
+
+See help of a given plugin with the option -h or -?
+
+Some examples:
+
+check_snmp_disk :
+
+  ->To monitor physical memory on the host 10.0.0.1 community public (alert 90%,95%):
+     check_snmp_disk -H 10.0.0.1 -C public -m r -w 90 -c 95
+
+  ->To monitor disk space and virtual memory:
+     check_snmp_disk -H 10.0.0.1 -C public -m dv -w 90 -c 95
+
+  ->To monitor only the disk C: 
+     check_snmp_disk -H 10.0.0.2 -C public -m d -w 90 -c 95 -f C:
+
+(on some windows system, you may have to filter by putting C:\\ instead of C:)
+
+check_snmp_process :
+
+  ->To check if apache and mysql is launched, and maximal number of process for WARN = 30 / CRIT = 50
+     check_snmp_process -H 10.0.0.1 -C public -m apache,mysqld -w 30 -c 50
+
+  ->To check if explorer.exe is launched and alert if it takes more than 50 Mo of memory
+     check_snmp_process -H 10.0.0.2 -C public -m explorer.exe -w 2 -c 5 -r 50
+
+check_snmp_load :
+
+  ->For a WINDOWS machine; to check CPU 
+     check_snmp_load -H 10.0.0.2 -C public -m W -w 90 -c 95
+
+  ->For a LINUX machine; to check LOAD (with warn and critical limits)
+     check_snmp_load -H 10.0.0.1 -C public -m L -w 10,08,05 -c 20,15,10
+
+ 
+If you have any questions, bug report, feature request         
+mail : vincent@xenbox.fr

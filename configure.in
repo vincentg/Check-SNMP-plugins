@@ -1,0 +1,75 @@
+
+AC_INIT(src/check_snmp_disk.c)
+
+VER=0.8
+REL=1
+AC_SUBST(VER)
+AC_SUBST(REL)
+PACKAGE_VERSION="${VER}"
+AC_SUBST(PACKAGE_VERSION)
+PACKAGE_RELEASE="${REL}"
+AC_SUBST(PACKAGE_RELEASE)
+
+AM_INIT_AUTOMAKE(snmp-plugins, 0.4)
+AM_CONFIG_HEADER(config.h)
+
+AC_PREFIX_DEFAULT(/usr/local/nagios)
+
+dnl Figure out how to invoke "install" and what install options to use.
+
+AC_PROG_INSTALL
+AC_SUBST(INSTALL)
+AC_CHECK_HEADERS(stdlib.h unistd.h string.h getopt.h errno.h)
+
+AC_PROG_CC
+
+LIBS=""
+INCLUDE=""
+
+save_LIBS="$LIBS"
+LIB_SOCKET=""
+AC_CHECK_FUNC(connect, :,
+        AC_CHECK_LIB(nsl, gethostbyname,
+                     LIB_SOCKET="-lnsl $LIB_SOCKET")
+        AC_CHECK_LIB(socket, connect,
+                     LIB_SOCKET="-lsocket $LIB_SOCKET")
+)
+LIBS="$LIB_SOCKET $save_LIBS"
+AC_CHECK_FUNC(res_search, :,
+        AC_CHECK_LIB(resolv, res_search,
+                      LIB_SOCKET="-lresolv $LIB_SOCKET")
+)
+LIBS="$LIB_SOCKET $save_LIBS"
+AC_CHECK_FUNCS(dn_expand dns_lookup)
+LIBS="$save_LIBS"
+AC_SUBST(LIB_SOCKET)
+
+
+AC_ARG_WITH(snmp,
+            [  --with-snmp=DIR      use snmp (rooted in DIR) [yes] ],
+            with_snmp=$withval, with_snmp=yes)
+
+SNMP_CONFIG=""
+if test "$with_snmp" != no; then
+  AC_PATH_PROG(SNMP_CONFIG,net-snmp-config,,[/usr/local/bin:$PATH])
+
+  if test -x "$SNMP_CONFIG"; then
+    SNMP_LIBS=`$SNMP_CONFIG --netsnmp-libs`
+    SNMP_LIBS="$SNMP_LIBS `$SNMP_CONFIG --external-libs`"
+    SNMP_PREFIX=`$SNMP_CONFIG --prefix`
+
+    if test -n "$SNMP_LIBS" && test -n "$SNMP_PREFIX"; then
+      INCLUDE="${INCLUDE} ${SNMP_PREFIX}/include"
+      LIBS="${LIBS} $SNMP_LIBS"
+      AC_DEFINE(HAVE_NET_SNMP,1,[ ])
+      SNMP_LIBNAME=netsnmp
+    else
+      AC_MSG_ERROR([Could not find the required paths. Please check your net-snmp installation.])
+    fi
+  else 
+    AC_MSG_ERROR([Could not find net-snmp-config. Please check your net-snmp installation.])
+  fi
+fi
+
+AC_SUBST(LIB_SNMP)
+AC_OUTPUT(Makefile src/Makefile)
