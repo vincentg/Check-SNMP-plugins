@@ -511,7 +511,7 @@ check_and_print (int cpunbr)
 	  average += load[count];
 	  if (verbose)
 	    {
-	      printf ("Cpu n�%d load=%d%% \n", count, load[count]);
+	      printf ("Cpu no load=%d%% \n", count, load[count]);
 	    }
 	}
       average /= cpunbr;
