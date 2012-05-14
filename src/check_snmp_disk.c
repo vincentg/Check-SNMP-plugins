@@ -624,7 +624,7 @@ check_and_print (t_storage * storage, int storage_length)
   int count;
   double totalMB, usedMB;
   int percent;
-  int exitstatus = OK;
+  int exitstatus = UNKNOWN;
   t_storage *current_storage = storage;
   
   /*
@@ -660,12 +660,14 @@ check_and_print (t_storage * storage, int storage_length)
 
 
       /* Checks for alert */
-      if (percent >= warningmin)
+      if (percent <= criticalmin)
 	{
-	  if (percent >= criticalmin)
+	  if (percent <= warningmin)
 	    {
-	      printf ("CRITICAL= ");
-	      exitstatus = CRITICAL;
+	      if (exitstatus != CRITICAL && exitstatus != WARNING ) {
+	        exitstatus = OK;
+	      }
+	      printf ("OK= ");
 	    }
 	  else
 	    {
@@ -674,6 +676,9 @@ check_and_print (t_storage * storage, int storage_length)
 	      }
 	      printf ("WARNING= ");
 	    }
+	} else {
+	  exitstatus = CRITICAL;
+	  printf ("CRITICAL= ");
 	}
 
 /* Print entry */
