@@ -707,6 +707,11 @@ check_and_print (t_storage * storage, int storage_length)
 	  
   }
   
+  if ( exitstatus == UNKNOWN ) {
+    exitstatus = CRITICAL;
+    printf ("CRITICAL - no entries found");
+  }
+
   
   printf ("\n");
 
