@@ -321,7 +321,7 @@ checkDisk (netsnmp_session * ss)
 
   char *tmp;
 
-  unsigned char desc_uchar[20];
+  unsigned char desc_uchar[50];
   int allocunit, totalsize, used;
 
 
@@ -480,9 +480,9 @@ checkDisk (netsnmp_session * ss)
       name[10] = 3;
       name[11] = mem_id;
 
-      memset (desc_uchar, '\0', 20);
+      memset (desc_uchar, '\0', 50);
 
-      snmp_get_uchar (ss, name, 12, desc_uchar, 20);
+      snmp_get_uchar (ss, name, 12, desc_uchar, 50);
 
       name[10] = 4;
       allocunit = snmp_get_int (ss, name, 12);
@@ -494,7 +494,7 @@ checkDisk (netsnmp_session * ss)
       used = snmp_get_int (ss, name, 12);
 
       storage =
-	newStorageEntry (index_storage, storage, desc_uchar, 20, allocunit,
+	newStorageEntry (index_storage, storage, desc_uchar, 50, allocunit,
 			 totalsize, used, mem_id, TYPE_MEM);
       index_storage++;
     }
@@ -509,7 +509,7 @@ checkDisk (netsnmp_session * ss)
       name[10] = 3;
       name[11] = virtual_id;
 
-      snmp_get_uchar (ss, name, 12, desc_uchar, 20);
+      snmp_get_uchar (ss, name, 12, desc_uchar, 50);
 
       name[10] = 4;
       allocunit = snmp_get_int (ss, name, 12);
@@ -521,7 +521,7 @@ checkDisk (netsnmp_session * ss)
       used = snmp_get_int (ss, name, 12);
 
       storage =
-	newStorageEntry (index_storage, storage, desc_uchar, 20, allocunit,
+	newStorageEntry (index_storage, storage, desc_uchar, 50, allocunit,
 			 totalsize, used, mem_id, TYPE_MEM);
       index_storage++;
     }
@@ -540,7 +540,7 @@ checkDisk (netsnmp_session * ss)
 
 	  name[10] = 3;
 	  name[11] = fixed_id[count];
-	  snmp_get_uchar (ss, name, 12, desc_uchar, 20);
+	  snmp_get_uchar (ss, name, 12, desc_uchar, 50);
 
 	  if ((tmp = strchr (desc_uchar, ' ')) != NULL)
 	    {
@@ -556,7 +556,7 @@ checkDisk (netsnmp_session * ss)
 	  used = snmp_get_int (ss, name, 12);
 
 	  storage =
-	    newStorageEntry (index_storage, storage, desc_uchar, 20,
+	    newStorageEntry (index_storage, storage, desc_uchar, 50,
 			     allocunit, totalsize, used, mem_id, TYPE_MEM);
 	  index_storage++;
 	}
@@ -575,9 +575,9 @@ checkDisk (netsnmp_session * ss)
 
 
 	  name[10] = 3;
-	  memset (desc_uchar, '\0', 20);
+	  memset (desc_uchar, '\0', 50);
 	  name[11] = net_id[count];
-	  snmp_get_uchar (ss, name, 12, desc_uchar, 20);
+	  snmp_get_uchar (ss, name, 12, desc_uchar, 50);
 
 	  if ((tmp = strchr (desc_uchar, ' ')) != NULL)
 	    {
@@ -593,7 +593,7 @@ checkDisk (netsnmp_session * ss)
 	  used = snmp_get_int (ss, name, 12);
 
 	  storage =
-	    newStorageEntry (index_storage, storage, desc_uchar, 20,
+	    newStorageEntry (index_storage, storage, desc_uchar, 50,
 			     allocunit, totalsize, used, mem_id, TYPE_MEM);
 	  index_storage++;
 	}
