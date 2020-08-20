@@ -407,7 +407,7 @@ checkLoad (netsnmp_session * ss)
 			}
 		      else if ((cpunbr % 10) == 0)
 			{
-			  load = realloc (load, cpunbr + 10 * sizeof (int));
+			  load = realloc (load, (cpunbr + 10) * sizeof (int));
 			}
 
 		      load[cpunbr++] = (*(vars->val).integer);
@@ -511,7 +511,7 @@ check_and_print (int cpunbr)
 	  average += load[count];
 	  if (verbose)
 	    {
-	      printf ("Cpu n°%d load=%d%% \n", count, load[count]);
+	      printf ("Cpu no load=%d%% \n", count, load[count]);
 	    }
 	}
       average /= cpunbr;
