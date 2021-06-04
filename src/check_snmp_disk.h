@@ -37,7 +37,7 @@ int perfdata = 0;
 typedef struct store
 {
   int index;
-  unsigned char descr[20];
+  unsigned char descr[50];
   int allocunit;
   int totalsize;
   int used;
