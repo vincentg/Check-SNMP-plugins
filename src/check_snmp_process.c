@@ -361,7 +361,7 @@ checkProc (netsnmp_session * ss)
       if ((response =
 	   getResponse (name, name_length, ss, SNMP_MSG_GETNEXT)) == NULL)
 	{
-	  printf ("Erreur SNMP : timeout\n");
+	  printf ("SNMP Error: timeout\n");
 	  return UNKNOWN;
 	}
       if (response->errstat == SNMP_ERR_NOERROR)
