@@ -39,7 +39,7 @@ void usage(void)
 			"  SNMP v1/2c:\n"
 			"     -C COMMUNITY\tSNMP community name\n"
 			"  SNMP v3:\n"
-			"     -u Username\tSNMP community name\n"
+			"     -u Username\n"
 			"     -p Password\n"
 			"     -k Authentication Protocol [MD5|SHA|SHA-224|SHA-256|SHA-384|SHA-512]\n"
 		    "     -x Protocol   Privacy protocol [DES|AES]"
@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
 
 	if (version != SNMP_VERSION_3 && (!hostname || !community))
 	{
-		printf("Both Community and Hostname must be set\n");
+		printf("Both Community and Hostname must be set for SNMP v2\n");
 		exit(UNKNOWN);
 	}
 
@@ -330,6 +330,7 @@ int main(int argc, char *argv[])
 
 	free(community);
 	free(hostname);
+    free_v3_args(&v3_args);
 
 	return exitcode;
 }
