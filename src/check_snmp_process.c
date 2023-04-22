@@ -37,16 +37,21 @@ usage (void)
   fprintf (stderr,
 	   " Required options :\n"
 	   "  -H HOST\tHostname/IP to query\n"
-	   "  -C COMMUNITY\tSNMP community name\n"
+	   "  SNMP v1/2c:\n"
+	   "     -C COMMUNITY\tSNMP community name\n"
+	   "  SNMP v3:\n"
+	   "     -u Username\tSNMP community name\n"
+	   "     -p Password (TODO, take from file)\n"
+	   "     -k Authentication Protocol (MD5|SHA|SHA-224|SHA-256|SHA-384|SHA-512)\n"
 	   "  -m STRING\tSTRING define what process to check (m=monitor)\n"
-	   "\t\t\t STRING = proc1,proc2,proc3\n"
+	   "\t\t\t STRING = proc1,proc2,proc3\ n"
 	   "\t\t\t Example : -m spoolsv.exe,svchost.exe\n"
 	   "  -w INTEGER\tMax number of process before WARNING (Warn if >=)\n"
 	   "  -c INTEGER\tMax number of process before CRITICAL\n\n"
 	   " Additionals options :\n"
 	   "  -h -?\t\tPrint this help\n"
 	   "  -d \t\tProvide Performance data output(doesn't support multiple process check)\n"
-	   "  -s VERSION\tSNMP VERSION=[1|2c], 3 not supported right now (1 by default)\n"
+	   "  -s VERSION\tSNMP VERSION=[1|2c|3] (1 by default)\n"
 	   "  -V \t\tPrint Version\n"
 	   "  -r INTEGER\tMax value of ram in MB(sum of all the instances of a process)(throw a WARNING)\n"
 	   "  -R \t\tIf the memory check should throw a CRITICAL instead of a WARNING\n"
@@ -64,11 +69,17 @@ main (int argc, char *argv[])
   int opt;
   int exitcode = UNKNOWN;
   char *community = NULL;
+  char *username = NULL;
+  char *password = NULL;
   char *hostname = NULL;
+  #define ALGO_MAX_SIZE 8 // SHA-512
+  char algo[ALGO_MAX_SIZE] = "SHA1";
+ 
   char *bn = argv[0];
   int timeout = 0;
   int version = SNMP_VERSION_1;
   char *token;
+  int auth_type;
   
   /* Print the help if not arguments provided */ 
   if(argc==1) {
@@ -80,7 +91,7 @@ main (int argc, char *argv[])
    * get the common command line arguments 
    */
 
-  while ((opt = getopt (argc, argv, "?hVdvRAt:w:c:r:m:C:H:s:")) != -1)
+  while ((opt = getopt (argc, argv, "?hVdvRAt:w:c:r:m:C:H:s:u:p:k:")) != -1)
     {
       switch (opt)
 	{
@@ -108,8 +119,6 @@ main (int argc, char *argv[])
 	  critmem = 1;
 	  break;
 
-
-
 	case 't':
 	  /* Timeout */
 	  if (!is_integer (optarg))
@@ -129,6 +138,33 @@ main (int argc, char *argv[])
 
 	  if (verbose)
 	    printf ("%s: Community set to %s\n", bn, community);
+
+	  break;
+
+	case 'u':
+	  /* SNMPv3 Username */
+	  username = strdup (optarg);
+
+	  if (verbose)
+	    printf ("%s: Username set to %s\n", bn, username);
+
+	  break;
+
+	case 'p':
+	  /* SNMP passwd */
+	  password = strdup (optarg);
+
+	  if (verbose)
+	    printf ("%s: Password set\n", bn);
+
+	  break;
+
+	case 'k':
+	  /* SNMP algo */
+	  strncpy(algo,optarg,ALGO_MAX_SIZE-1);
+
+	  if (verbose)
+	    printf ("%s: Algo set to %s\n", bn, algo);
 
 	  break;
 
@@ -187,10 +223,14 @@ main (int argc, char *argv[])
 	    {
 	      version = SNMP_VERSION_1;
 	    }
+		else if (strcmp (optarg, "3") == 0)
+	    {
+	      version = SNMP_VERSION_3;
+	    }
 	  else
 	    {
 	      printf
-		("Sorry, only SNMP vers. 1 and 2c are supported at this time\n");
+		("Sorry, only SNMP vers. 1, 2c, 3 are supported at this time\n");
 	      exit (1);
 	    }
 	  break;
@@ -243,7 +283,7 @@ main (int argc, char *argv[])
       exit (UNKNOWN);
     }
 
-  if (!hostname || !community)
+  if (version != SNMP_VERSION_3 && (!hostname || !community))
     {
       printf ("Both Community and Hostname must be set\n");
       exit (UNKNOWN);
@@ -276,12 +316,27 @@ main (int argc, char *argv[])
   session.version = version;
 
   session.peername = hostname;
-  session.community = (unsigned char *) community;
-  session.community_len = strlen (community);
+  if (version != SNMP_VERSION_3) {
+    session.community = (unsigned char *) community;
+    session.community_len = strlen (community);
+  } else {
+	session.securityName = username;
+	session.securityNameLen = strlen(username);
+
+    int auth_type = usm_lookup_auth_type(algo);
+    if (auth_type > 0) {
+            session.securityAuthProto =
+                sc_get_auth_oid(auth_type, &session.securityAuthProtoLen);
+    } else {
+            printf("Invalid auth algo option: %s",algo);
+            exit(UNKNOWN);
+	}
+	generate_Ku(session.securityAuthProto,session.securityAuthProtoLen,password,
+	            strlen(password),session.securityAuthKey,&session.securityAuthKeyLen);
+  }
 
   if (timeout)
     session.timeout = timeout * 1000000L;
-
 
 
   SOCK_STARTUP;
