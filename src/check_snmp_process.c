@@ -80,6 +80,7 @@ main (int argc, char *argv[])
   int version = SNMP_VERSION_1;
   char *token;
   int auth_type;
+  int kuret;
   
   /* Print the help if not arguments provided */ 
   if(argc==1) {
@@ -323,16 +324,27 @@ main (int argc, char *argv[])
 	session.securityName = username;
 	session.securityNameLen = strlen(username);
 
-    int auth_type = usm_lookup_auth_type(algo);
+	/* Todo handle other security levels+payload encryption */
+	session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV;
+
+    auth_type = usm_lookup_auth_type(algo);
     if (auth_type > 0) {
             session.securityAuthProto =
-                sc_get_auth_oid(auth_type, &session.securityAuthProtoLen);
+                sc_get_auth_oid(auth_type, &(session.securityAuthProtoLen));
     } else {
             printf("Invalid auth algo option: %s",algo);
             exit(UNKNOWN);
 	}
-	generate_Ku(session.securityAuthProto,session.securityAuthProtoLen,password,
-	            strlen(password),session.securityAuthKey,&session.securityAuthKeyLen);
+    session.securityAuthKeyLen = USM_AUTH_KU_LEN;
+	kuret = generate_Ku(session.securityAuthProto,session.securityAuthProtoLen,(unsigned char *)password,
+	            strlen(password),session.securityAuthKey,&(session.securityAuthKeyLen));
+	if (kuret != SNMPERR_SUCCESS) {
+		printf("Error generating SNMP Key from the passphrase\n");
+        exit(UNKNOWN);
+	}
+
+
+	
   }
 
   if (timeout)
@@ -419,6 +431,7 @@ checkProc (netsnmp_session * ss)
 	  printf ("SNMP Error: timeout\n");
 	  return UNKNOWN;
 	}
+	/* TODO handle Auth failed and important error codes */
       if (response->errstat == SNMP_ERR_NOERROR)
 	{
 	  /*
