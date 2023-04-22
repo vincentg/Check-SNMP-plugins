@@ -62,6 +62,16 @@ check_snmp_load :
   ->For a LINUX machine; to check LOAD (with warn and critical limits)
      check_snmp_load -H 10.0.0.1 -C public -m L -w 10,08,05 -c 20,15,10
 
+
+Here is some SNMPv3 Examples (adding -s 3 and new parameters)
+
+  -> Only Authentication (-u User + -k Algo + -p Password)
+./check_snmp_disk -H colinas.local -s 3 -u snmpv3user -p snmpv3authpass -k SHA -m d -w 70 -c 90
+
+  -> Authentication + Privacy (adding -x Privacy Algo -X privacy password)
+./check_snmp_disk -H colinas.local -s 3 -u snmpv3user -p  -k SHA -x AES -X snmpv3privacypass -m d -w 70 -c 90
+
  
 If you have any questions, bug report, feature request         
 mail : vincent@xenbox.fr
+

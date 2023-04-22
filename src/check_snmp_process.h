@@ -1,5 +1,5 @@
 /*
-    check_snmp_process . A Nagios plugin to monitor process via SNMP	    
+    check_snmp_process . A Nagios plugin to monitor process via SNMP
 
     Copyright (C) 2006  Vincent GERARD v.ge@wanadoo.fr
 
@@ -18,13 +18,7 @@
     Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-#define OK 0
-#define WARNING 1
-#define CRITICAL 2
-#define UNKNOWN 3
-
-int perfdata =0;
+int perfdata = 0;
 int verbose = 0;
 int warnzero = 0;
 int critmem = 0;
@@ -40,21 +34,19 @@ typedef struct process
 
 } t_process;
 
-
 t_process *process;
 
-const oid objid_mib[] = { 1, 3, 6, 1, 2, 1, 25, 4, 2, 1, 2 };
+const oid objid_mib[] = {1, 3, 6, 1, 2, 1, 25, 4, 2, 1, 2};
 
 int warningmin = -1;
 int criticalmin = -1;
 
 int procnbr = 0;
 
+void usage(void);
+int checkProc(netsnmp_session *ss);
+t_process *newProcessEntry(int index_process, t_process *process,
+                           u_char *descr, size_t descr_length,
+                           int ram, int cpu);
 
-void usage (void);
-int checkProc (netsnmp_session * ss);
-t_process *newProcessEntry (int index_process, t_process * process,
-			    u_char * descr, size_t descr_length,
-			    int ram, int cpu);
-
-int check_and_print (netsnmp_session * ss, int procnbr);
+int check_and_print(netsnmp_session *ss, int procnbr);
