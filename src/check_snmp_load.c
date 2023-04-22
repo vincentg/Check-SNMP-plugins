@@ -329,6 +329,8 @@ int main(int argc, char *argv[])
 	free(community);
 	free(hostname);
 
+	free_v3_args(&v3_args);
+
 	return exitcode;
 }
 

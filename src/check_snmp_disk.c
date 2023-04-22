@@ -31,8 +31,15 @@ void usage(void)
 	fprintf(stderr,
 			" Required options :\n"
 			"  -H HOST\tHostname/IP to query\n"
-			"  -C COMMUNITY\tSNMP community name\n"
-			"  -m STRING\tWhat must be monitored (m = monitor)\n"
+			"  SNMP v1/2c:\n"
+			"     -C COMMUNITY\tSNMP community name\n"
+			"  SNMP v3:\n"
+			"     -u Username\n"
+			"     -p Password\n"
+			"     -k Authentication Protocol [MD5|SHA|SHA-224|SHA-256|SHA-384|SHA-512]\n"
+		    "     -x Protocol   Privacy protocol [DES|AES]\n"
+            "     -X Passphrase Privacy protocol pass phrase\n"
+		    "  -m STRING\tWhat must be monitored (m = monitor)\n"
 			"\t\t\t r = Physical Memory(RAM)\n"
 			"\t\t\t v = Virtual Memory\n"
 			"\t\t\t d = Fixed Disks\n"
@@ -44,7 +51,7 @@ void usage(void)
 			"  -h -?\t\tPrint this help\n"
 			"  -V \t\tPrint Version\n"
 			"  -d \t\tProvide Performance data output\n"
-			"  -s VERSION\tSNMP VERSION=[1|2c], 3 not supported (1 by default)\n"
+			"  -s VERSION\tSNMP VERSION=[1|2c|3]\n"
 			"  -f STRING\tAdditional filter\n"
 			"\t\t\t Example : -f C: , -f /tmp \n");
 }
@@ -64,6 +71,10 @@ int main(int argc, char *argv[])
 	char *bn = argv[0];
 	int timeout = 0;
 	int version = SNMP_VERSION_1;
+	snmpv3_args_t v3_args;
+
+	init_v3_args(&v3_args);
+
 
 	/* Print the help if not arguments provided */
 	if (argc == 1)
@@ -76,7 +87,7 @@ int main(int argc, char *argv[])
 	 * get the common command line arguments with getopt
 	 */
 
-	while ((opt = getopt(argc, argv, "?hVdvt:w:c:m:C:H:s:f:")) != -1)
+	while ((opt = getopt(argc, argv, "?hVdvt:w:c:m:C:H:s:f:u:p:k:x:X:")) != -1)
 	{
 		switch (opt)
 		{
@@ -132,6 +143,14 @@ int main(int argc, char *argv[])
 			printf("%s: Verbose mode activated\n", bn);
 			break;
 
+		case 'u':
+		case 'p':
+		case 'k':
+		case 'x':
+		case 'X':
+		    snmpv3_parseargs(verbose,opt,optarg,&v3_args);
+			break;
+
 		case 'm':
 			/* Parse the string which tell the program what to check */
 			while (*optarg)
@@ -170,9 +189,13 @@ int main(int argc, char *argv[])
 			{
 				version = SNMP_VERSION_1;
 			}
+			else if (strcmp(optarg, "3") == 0)
+			{
+				version = SNMP_VERSION_3;
+			}
 			else
 			{
-				printf("Sorry, only SNMP vers. 1 and 2c are supported at this time\n");
+				printf("Sorry, only SNMP vers. 1, 2c, 3 are supported at this time\n");
 				exit(1);
 			}
 			break;
@@ -227,9 +250,9 @@ int main(int argc, char *argv[])
 		exit(UNKNOWN);
 	}
 
-	if (!hostname || !community)
+	if (version != SNMP_VERSION_3 && (!hostname || !community))
 	{
-		printf("Both Community and Hostname must be set\n");
+		printf("Both Community and Hostname must be set for SNMP v2\n");
 		exit(UNKNOWN);
 	}
 
@@ -240,8 +263,17 @@ int main(int argc, char *argv[])
 	session.version = version;
 
 	session.peername = hostname;
-	session.community = (unsigned char *)community;
-	session.community_len = strlen(community);
+
+	if (version != SNMP_VERSION_3)
+	{
+		session.community = (unsigned char *)community;
+		session.community_len = strlen(community);
+	}
+	else
+	{
+		snmpv3_set_session(&session,&v3_args);
+	}
+
 	/* Set timeout */
 	if (timeout)
 		session.timeout = timeout * 1000000L;
@@ -271,6 +303,7 @@ int main(int argc, char *argv[])
 
 	free(hostname);
 	free(community);
+	free_v3_args(&v3_args);
 
 	return exitcode;
 }
