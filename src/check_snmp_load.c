@@ -39,7 +39,7 @@ void usage(void)
 			"  -s VERSION\tVERSION=[1|2c], 3 not supported \n"
 			"  -V \t\tPrint Version\n"
 			"  -d \t\tProvide Performance data output\n"
-			"  -m [W,L]\t\tDefinit les elements a verifier (m=monitor)\n"
+			"  -m [W,L]\t\tDefine if windows or linux\n"
 			"\t\t\t\t W = Monitor Windows machines (result in %%)\n"
 			"\t\t\t\t L = Monitor Linux Load Average\n"
 			"\t\t\t\t Example : -m W for windows load\n"

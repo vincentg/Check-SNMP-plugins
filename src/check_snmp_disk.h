@@ -25,11 +25,6 @@
 #define TYPE_FIXED 2
 #define TYPE_NET 3
 
-#define OK 0
-#define WARNING 1
-#define CRITICAL 2
-#define UNKNOWN 3
-
 
 int verbose = 0;
 int perfdata = 0;

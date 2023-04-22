@@ -40,9 +40,11 @@ void usage(void)
 			"     -C COMMUNITY\tSNMP community name\n"
 			"  SNMP v3:\n"
 			"     -u Username\tSNMP community name\n"
-			"     -p Password (TODO, take from file)\n"
-			"     -k Authentication Protocol (MD5|SHA|SHA-224|SHA-256|SHA-384|SHA-512)\n"
-			"  -m STRING\tSTRING define what process to check (m=monitor)\n"
+			"     -p Password\n"
+			"     -k Authentication Protocol [MD5|SHA|SHA-224|SHA-256|SHA-384|SHA-512]\n"
+		    "     -x Protocol   Privacy protocol [DES|AES]"
+            "     -X Passphrase Privacy protocol pass phrase"
+			"  -m STRING\tSTRING define which process to check (m=monitor)\n"
 			"\t\t\t STRING = proc1,proc2,proc3\n"
 			"\t\t\t Example : -m spoolsv.exe,svchost.exe\n"
 			"  -w INTEGER\tMax number of process before WARNING (Warn if >=)\n"
@@ -67,18 +69,14 @@ int main(int argc, char *argv[])
 	int opt;
 	int exitcode = UNKNOWN;
 	char *community = NULL;
-	char *username = NULL;
-	char *password = NULL;
 	char *hostname = NULL;
-#define ALGO_MAX_SIZE 8 // SHA-512
-	char algo[ALGO_MAX_SIZE] = "SHA1";
-
 	char *bn = argv[0];
 	int timeout = 0;
 	int version = SNMP_VERSION_1;
 	char *token;
-	int auth_type;
-	int kuret;
+	snmpv3_args_t v3_args;
+
+	init_v3_args(&v3_args);
 
 	/* Print the help if not arguments provided */
 	if (argc == 1)
@@ -91,7 +89,7 @@ int main(int argc, char *argv[])
 	 * get the common command line arguments
 	 */
 
-	while ((opt = getopt(argc, argv, "?hVdvRAt:w:c:r:m:C:H:s:u:p:k:")) != -1)
+	while ((opt = getopt(argc, argv, "?hVdvRAt:w:c:r:m:C:H:s:u:p:k:x:X:")) != -1)
 	{
 		switch (opt)
 		{
@@ -142,30 +140,11 @@ int main(int argc, char *argv[])
 			break;
 
 		case 'u':
-			/* SNMPv3 Username */
-			username = strdup(optarg);
-
-			if (verbose)
-				printf("%s: Username set to %s\n", bn, username);
-
-			break;
-
 		case 'p':
-			/* SNMP passwd */
-			password = strdup(optarg);
-
-			if (verbose)
-				printf("%s: Password set\n", bn);
-
-			break;
-
 		case 'k':
-			/* SNMP algo */
-			strncpy(algo, optarg, ALGO_MAX_SIZE - 1);
-
-			if (verbose)
-				printf("%s: Algo set to %s\n", bn, algo);
-
+		case 'x':
+		case 'X':
+		    snmpv3_parseargs(verbose,opt,optarg,&v3_args);
 			break;
 
 		case 'H':
@@ -319,32 +298,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		session.securityName = username;
-		session.securityNameLen = strlen(username);
-
-		/* Todo handle other security levels+payload encryption */
-		session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV;
-
-		auth_type = usm_lookup_auth_type(algo);
-		if (auth_type > 0)
-		{
-			session.securityAuthProto =
-				sc_get_auth_oid(auth_type, &(session.securityAuthProtoLen));
-		}
-		else
-		{
-			printf("Invalid auth algo option: %s", algo);
-			exit(UNKNOWN);
-		}
-		session.securityAuthKeyLen = USM_AUTH_KU_LEN;
-		kuret = generate_Ku(session.securityAuthProto, session.securityAuthProtoLen, (unsigned char *)password,
-							strlen(password), session.securityAuthKey, &(session.securityAuthKeyLen));
-
-		if (kuret != SNMPERR_SUCCESS)
-		{
-			printf("Error generating SNMP Key from the passphrase\n");
-			exit(UNKNOWN);
-		}
+		snmpv3_set_session(&session,&v3_args);
 	}
 
 	if (timeout)

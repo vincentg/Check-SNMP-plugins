@@ -18,11 +18,6 @@
     Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#define OK 0
-#define WARNING 1
-#define CRITICAL 2
-#define UNKNOWN 3
-
 int perfdata = 0;
 int verbose = 0;
 int warnzero = 0;
