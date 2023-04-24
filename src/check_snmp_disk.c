@@ -53,7 +53,9 @@ void usage(void)
 			"  -d \t\tProvide Performance data output\n"
 			"  -s VERSION\tSNMP VERSION=[1|2c|3]\n"
 			"  -f STRING\tAdditional filter\n"
-			"\t\t\t Example : -f C: , -f /tmp \n");
+			"\t\t\t Example : -f C: , -f /tmp \n"
+			"  -R NUMBER in percent\tRemove percentage from disks max capacity:\n\t\t\t-R 5 will simulate root reserved space\n"
+			);
 }
 
 /* main function :
@@ -87,7 +89,7 @@ int main(int argc, char *argv[])
 	 * get the common command line arguments with getopt
 	 */
 
-	while ((opt = getopt(argc, argv, "?hVdvt:w:c:m:C:H:s:f:u:p:k:x:X:")) != -1)
+	while ((opt = getopt(argc, argv, "?hVdvt:w:c:m:C:H:s:f:R:u:p:k:x:X:")) != -1)
 	{
 		switch (opt)
 		{
@@ -118,6 +120,27 @@ int main(int argc, char *argv[])
 			if (verbose)
 				printf("%s: Timeout set to %d\n", bn, timeout);
 			break;
+
+		case 'R':
+			/* Set reserved space */
+			if (!is_integer(optarg))
+			{
+				printf("Reserved space (%s) must be integer!\n", optarg);
+				exit(UNKNOWN);
+			}
+
+			reserved = atoi(optarg);
+			
+			if (verbose)
+				printf("%s: Reserved set to %d\n", bn, reserved);
+			
+			if (reserved < 0 || reserved > 99)
+			{
+				printf("Reserved space (%s) must be a percentage between 0 and 99\n", optarg);
+				exit(UNKNOWN);
+			}
+			break;
+
 
 		case 'C':
 			/* Set SNMP community */
@@ -610,7 +633,7 @@ int check_and_print(t_storage *storage, int storage_length)
 {
 
 	int count;
-	double totalMB, usedMB;
+	double totalMB, usedMB, tempTotalMB;
 	int percent;
 	int exitstatus = UNKNOWN;
 	t_storage *current_storage = storage;
@@ -637,6 +660,14 @@ int check_and_print(t_storage *storage, int storage_length)
 		 * Double  because values can be bigger than INTEGER maximum
 		 */
 		totalMB = current_storage->allocunit * (double)current_storage->totalsize / 1048576;
+		if (reserved) {
+			/* Remove specific percentage */
+			double tempTotalMB = totalMB * (1- reserved/100.0);
+			if (verbose) {
+				printf("Reserved space set to %d, Reducing totalMB from: %f to %f\n",reserved,totalMB,tempTotalMB);
+			}
+			totalMB = tempTotalMB;
+		}
 		usedMB = current_storage->allocunit * (double)current_storage->used / 1048576;
 		percent = usedMB / totalMB * 100;
 		/* If totalsize = 0, pass (case of some /dev) */
