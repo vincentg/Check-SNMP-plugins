@@ -54,12 +54,12 @@ int check_disk = 0;
 int check_net = 0;
 int check_vmem = 0;
 int filteron = 0;
+int reserved = 0;
 char filter[20];
 
 
 void usage (void);
 int checkDisk (netsnmp_session * ss);
-
 int check_and_print (t_storage * storage, int index_storage);
 
 t_storage *newStorageEntry (int index_storage, t_storage * storage,
