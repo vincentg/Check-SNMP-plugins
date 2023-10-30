@@ -18,3 +18,9 @@
 - Push the limit to 100 disks instead of 20
 - Author mailbox changed (vincent@xenbox.fr)
 
+1.0
+- Add support for reserved space for Root in check_snmp_disk
+- Code formatting
+
+1.1
+- Add support for SNMP v3
