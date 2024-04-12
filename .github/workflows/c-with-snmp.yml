@@ -16,7 +16,7 @@ jobs:
     - name: Update apt
       run: sudo apt-get update
     - name: Install LibSNMP
-      run: sudo apt-get install libsnmp-dev
+      run: sudo apt-get install libsnmp-dev cmake
     - name: cmake
       run: ./cmake .
     - name: make
