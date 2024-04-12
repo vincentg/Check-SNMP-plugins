@@ -15,9 +15,9 @@ jobs:
     - uses: actions/checkout@v3
     - name: Update apt
       run: sudo apt-get update
-    - name: Install LibSNMP
+    - name: Install LibSNMP and CMake
       run: sudo apt-get install libsnmp-dev cmake
     - name: cmake
-      run: ./cmake .
+      run: cmake .
     - name: make
       run: make
