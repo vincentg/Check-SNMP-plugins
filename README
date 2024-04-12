@@ -10,19 +10,14 @@ This package includes:
 
 Prerequisites:
 
-You must have the snmp development library installed on your system
-(on linux debian: aptitude install libsnmp-dev)
+You must have the snmp development library installed on your system and cmake
+(on linux debian: aptitude install libsnmp-dev cmake)
 
 To compile:
-./configure   (--prefix=PATH)
+cmake .
 make
 
-if you have set a prefix:
-make install and binaries will be in PATH/bin
-if you experiment compilation problems, please refer to the INSTALL file
-
-
-3 binaries are now in ./src or PATH/bin (if you provided a --prefix to configure):
+3 binaries are now in current directory
 
 check_snmp_disk
 check_snmp_process
