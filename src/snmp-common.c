@@ -22,7 +22,7 @@
 #include <net-snmp/net-snmp-includes.h>
 #include <errno.h>
 #include <limits.h>
-#include <snmp-common.h>
+#include "snmp-common.h"
 
 #define VERSION "1.1"
 
