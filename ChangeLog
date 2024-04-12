@@ -24,3 +24,6 @@
 
 1.1
 - Add support for SNMP v3
+
+1.2
+- Migrated build to CMake
