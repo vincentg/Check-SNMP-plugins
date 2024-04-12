@@ -1,22 +1,13 @@
 You need to have netsnmp development library installed on your system,
-For instance, on debian the package is libsnmp-dev
+For instance, on debian the package is libsnmp-dev, on RHEL: net-snmp-devel
 
 Basic installation guidelines
 
   cd to the root of the tar.gz
 
-  ./configure
+  cmake .
   make
 
-The 3 binary files should be now in the src/ directory
-
-
-->If you experiment some problems, try to rebuild the ./configure , make:
-  
-  make clean
-  automake --add-missing
-  autoconf
-
-and retry the ./configure, make process
+The 3 binary files should be now in the directory
 
 Please report any compilation issues at : vincent@xenbox.fr
