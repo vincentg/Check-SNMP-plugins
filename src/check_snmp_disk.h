@@ -25,21 +25,18 @@
 #define TYPE_FIXED 2
 #define TYPE_NET 3
 
-
 int verbose = 0;
 int perfdata = 0;
 
-typedef struct store
-{
-  int index;
-  unsigned char descr[50];
-  int allocunit;
-  int totalsize;
-  int used;
-  int type;
+typedef struct store {
+    int index;
+    unsigned char descr[50];
+    int allocunit;
+    int totalsize;
+    int used;
+    int type;
 
 } t_storage;
-
 
 oid FIXED_DISK[] = { 1, 3, 6, 1, 2, 1, 25, 2, 1, 4 };
 oid VIRTUAL_MEM[] = { 1, 3, 6, 1, 2, 1, 25, 2, 1, 3 };
@@ -57,13 +54,10 @@ int filteron = 0;
 int reserved = 0;
 char filter[20];
 
+void usage(void);
+int checkDisk(netsnmp_session * ss);
+int check_and_print(t_storage * storage, int index_storage);
 
-void usage (void);
-int checkDisk (netsnmp_session * ss);
-int check_and_print (t_storage * storage, int index_storage);
-
-t_storage *newStorageEntry (int index_storage, t_storage * storage,
-			    unsigned char * descr, size_t descr_length,
-			    int allocunit, int totalsize,
-			    int used, int index_oid, int type);
-
+t_storage *newStorageEntry(int index_storage, t_storage * storage,
+                           unsigned char *descr, size_t descr_length,
+                           int allocunit, int totalsize, int used, int index_oid, int type);

@@ -28,13 +28,13 @@ int perfdata = 0;
 int *load;
 double linload[3];
 
-const oid linux_mib[] = {1, 3, 6, 1, 4, 1, 2021, 10, 1, 3};
-const oid win_mib[] = {1, 3, 6, 1, 2, 1, 25, 3, 3, 1, 2};
+const oid linux_mib[] = { 1, 3, 6, 1, 4, 1, 2021, 10, 1, 3 };
+const oid win_mib[] = { 1, 3, 6, 1, 2, 1, 25, 3, 3, 1, 2 };
 
-int warningmin[3] = {-1, -1, -1};
-int criticalmin[3] = {-1, -1, -1};
+int warningmin[3] = { -1, -1, -1 };
+int criticalmin[3] = { -1, -1, -1 };
 
 void usage(void);
-int checkLoad(netsnmp_session *ss);
+int checkLoad(netsnmp_session * ss);
 
 int check_and_print(int cpunbr);

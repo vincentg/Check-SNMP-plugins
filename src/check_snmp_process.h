@@ -24,19 +24,18 @@ int warnzero = 0;
 int critmem = 0;
 int rammin = 9999;
 
-typedef struct process
-{
-  int *index;
-  unsigned char procstr[20];
-  int nbr;
-  int ram;
-  int cpu;
+typedef struct process {
+    int *index;
+    unsigned char procstr[20];
+    int nbr;
+    int ram;
+    int cpu;
 
 } t_process;
 
 t_process *process;
 
-const oid objid_mib[] = {1, 3, 6, 1, 2, 1, 25, 4, 2, 1, 2};
+const oid objid_mib[] = { 1, 3, 6, 1, 2, 1, 25, 4, 2, 1, 2 };
 
 int warningmin = -1;
 int criticalmin = -1;
@@ -44,9 +43,8 @@ int criticalmin = -1;
 int procnbr = 0;
 
 void usage(void);
-int checkProc(netsnmp_session *ss);
-t_process *newProcessEntry(int index_process, t_process *process,
-                           u_char *descr, size_t descr_length,
-                           int ram, int cpu);
+int checkProc(netsnmp_session * ss);
+t_process *newProcessEntry(int index_process, t_process * process,
+                           u_char * descr, size_t descr_length, int ram, int cpu);
 
-int check_and_print(netsnmp_session *ss, int procnbr);
+int check_and_print(netsnmp_session * ss, int procnbr);
