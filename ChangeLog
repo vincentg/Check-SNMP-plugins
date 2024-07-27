@@ -27,3 +27,7 @@
 
 1.2
 - Migrated build to CMake
+
+1.3
+- Fix Formatting of check_snmp_process help
+- Fix Cmake regression: check_snmp_load was using check_snmp_process code
