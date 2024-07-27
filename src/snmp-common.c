@@ -24,7 +24,7 @@
 #include <limits.h>
 #include "snmp-common.h"
 
-#define VERSION "1.1"
+#define VERSION "1.3"
 
 void print_version(void)
 {
