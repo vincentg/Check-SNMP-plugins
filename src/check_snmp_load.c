@@ -353,7 +353,7 @@ int checkLoad(netsnmp_session *ss)
 
                 if (style == WINDOWS) {
                     if (vars->type == ASN_INTEGER) {
-                        /* Allocation de 10 en 10 */
+                        /* Allocate in chunks of 10 */
                         if (cpunbr == 0) {
                             load = malloc(10 * sizeof(int));
                         } else if ((cpunbr % 10) == 0) {
@@ -376,12 +376,12 @@ int checkLoad(netsnmp_session *ss)
                     }
                 }
 
-                /* Test si ce n'est pas une exception */
+                /* Test if it's not an exception */
 
                 if ((vars->type != SNMP_ENDOFMIBVIEW) &&
                     (vars->type != SNMP_NOSUCHOBJECT) && (vars->type != SNMP_NOSUCHINSTANCE)) {
 
-                    /* Et l'on avance dans la MIB :) */
+                    /* And we advance in the MIB :) */
 
                     memmove((char *)name, (char *)vars->name, vars->name_length * sizeof(oid));
                     name_length = vars->name_length;
@@ -389,7 +389,7 @@ int checkLoad(netsnmp_session *ss)
 
                 else
                     /*
-                     * une exception , donc stop
+                     * an exception, so stop
                      */
                     running = 0;
             }
@@ -414,11 +414,11 @@ int checkLoad(netsnmp_session *ss)
 }
 
 /*
- * check_and_print : utilise la structure process, cherche l'occupation memoire
- * 		     et affiche
+ * check_and_print : uses the process structure, searches for memory occupation
+ * 		     and displays
  *
  *	arguments :  *storage : structure t_storage
- *		     storage_length : taille de la structure (nb d'elements)
+ *		     storage_length : size of the structure (number of elements)
  */
 
 int check_and_print(int cpunbr)
