@@ -1,0 +1,5 @@
+/home/runner/work/Check-SNMP-plugins/Check-SNMP-plugins/CMakeFiles/check_snmp_disk.dir
+/home/runner/work/Check-SNMP-plugins/Check-SNMP-plugins/CMakeFiles/check_snmp_process.dir
+/home/runner/work/Check-SNMP-plugins/Check-SNMP-plugins/CMakeFiles/check_snmp_load.dir
+/home/runner/work/Check-SNMP-plugins/Check-SNMP-plugins/CMakeFiles/edit_cache.dir
+/home/runner/work/Check-SNMP-plugins/Check-SNMP-plugins/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/check_snmp_disk.dir/link.d CMakeFiles/check_snmp_disk.dir/src/check_snmp_disk.c.o "CMakeFiles/check_snmp_disk.dir/src/snmp-common.c.o" -o check_snmp_disk  /usr/lib/x86_64-linux-gnu/libnetsnmp.so
